@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Raw ingested data from 17lands public datasets
+    schema: raw
+    tables:
+      - name: draft
+        description: Draft-level data, one row per pick. Filter by expansion, event_type.
+      - name: game
+        description: Game-level data, one row per game. Filter by expansion, event_type.
+      - name: replay
+        description: Replay data, one row per turn. Filter by expansion, event_type.
+
+  - name: raw_helpers
+    description: Helper files (dungeon abilities, etc.) for parsing replay data
+    schema: raw_helpers
+    tables:
+      - name: dungeon
+        description: AFR dungeon ability IDs mapped to dungeon, room, effect.
+
+  - name: raw_card_data
+    description: MTGA ID to card name mappings for replay data
+    schema: raw_card_data
+    tables:
+      - name: abilities
+        description: MTGA ability IDs to names/descriptions
+      - name: cards
+        description: MTGA card IDs to card names and metadata

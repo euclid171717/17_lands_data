@@ -1,0 +1,9 @@
+# dbt profile for 17lands. Uses local DuckDB.
+# Run dbt from project root so the path resolves correctly.
+
+17lands:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "data/db/17lands.duckdb"

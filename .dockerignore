@@ -1,0 +1,28 @@
+# Git
+.git
+.gitignore
+
+# Python
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+
+# Data (mounted as volume - avoid copying into image)
+data/
+output/
+
+# Config with secrets (use mounted config or bind-mount)
+# config/datasets.yaml and config/jobs.yaml are typically bind-mounted
+
+# IDE / OS
+.cursor
+.vscode
+*.md
+!README.md
+
+# dbt (will be run in container)
+target/
+dbt_packages/
+logs/

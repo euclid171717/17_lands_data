@@ -1,0 +1,36 @@
+# Config (may contain local paths - use .example as template)
+config/datasets.yaml
+config/jobs.yaml
+
+# Data (large files - never commit)
+data/*
+!data/.gitkeep
+!data/sample/
+!data/sample/**
+# Exclude large dataset files from sample (several GB each - use data/raw/datasets/)
+data/sample/*draft_data_public*
+data/sample/*game_data_public*
+data/sample/*replay_data_public*
+*.db
+*.duckdb
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Output
+output/*.csv
+output/*.png
+output/*.html
+!output/.gitkeep
+
+# dbt
+target/
+dbt_packages/
+logs/

@@ -1,0 +1,43 @@
+# Copy to datasets.yaml. Used by scripts/ingest/cli.py
+# Get URLs from https://www.17lands.com/public_datasets (tables load dynamically)
+
+s3_base: "https://17lands-public.s3.amazonaws.com"
+
+# URL patterns: {expansion} and {format} are replaced. Format uses PascalCase (PremierDraft, etc.)
+# Add explicit urls in helpers if patterns don't match 17lands structure
+url_patterns:
+  draft: "analysis_data/draft_data/draft_data_public.{expansion}.{format}.csv.gz"
+  game: "analysis_data/game_data/game_data_public.{expansion}.{format}.csv.gz"
+  replay: "analysis_data/replay_data/replay_data_public.{expansion}.{format}.csv.gz"
+
+# Format mapping (our key -> 17lands PascalCase)
+format_map:
+  premier_draft: PremierDraft
+  quick_draft: QuickDraft
+  traditional_draft: TraditionalDraft
+
+# Helper files - small metadata. Fill URLs from public_datasets page.
+helpers:
+  - name: replay_dtypes
+    url: "https://17lands-public.s3.amazonaws.com/analysis_data/helper_files/replay_dtypes.py"
+    table: raw_helpers.helper_replay_dtypes
+  - name: dungeon
+    url: "https://17lands-public.s3.amazonaws.com/analysis_data/helper_files/dungeon.csv"
+    table: raw_helpers.dungeon
+  # Add more as you find them on the page:
+  # - name: formats
+  #   url: "..."
+  #   table: raw_helpers.helper_formats
+
+# Card lists - map MTGA IDs to card names for replay data. Fill from public_datasets Card Lists table.
+card_lists:
+  urls:
+    - "https://17lands-public.s3.amazonaws.com/analysis_data/abilities/abilities.csv"
+    - "https://17lands-public.s3.amazonaws.com/analysis_data/cards/cards.csv"
+
+# Expansions to ingest. Add codes from the public_datasets table.
+expansions:
+  - code: MKM
+    formats: [premier_draft, quick_draft, traditional_draft]
+  - code: LCI
+    formats: [premier_draft, quick_draft, traditional_draft]

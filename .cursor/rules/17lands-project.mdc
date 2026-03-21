@@ -1,0 +1,36 @@
+---
+description: Core project context and conventions for 17lands data analysis
+alwaysApply: true
+---
+
+# 17lands Data Project Rules
+
+## Project Context
+
+This repo analyzes 17lands drafting data (Magic: The Gathering Arena Limited).
+
+**Data source**: Use [public datasets](https://www.17lands.com/public_datasets) only—do not scrape their API or site. Data is CSV/JSON, gzip compressed. Types: game-level, draft-level, replay. License: CC BY 4.0.
+
+See docs/IMPLEMENTATION_PLAN.md for ingestion (file/set/all), helper data, scheduling.
+
+Key conventions:
+
+- **Raw data**: Store in `data/`, never modify originals
+- **Outputs**: Write to `output/` (reports, charts, processed CSVs)
+- **Scripts**: `scripts/` for reusable code, `notebooks/` for exploration
+
+## Data Rules
+
+1. Preserve 17lands column names exactly: `avg_seen_at`, `win_rate`, `ever_drawn_win_rate`, etc.
+2. Filter by format/rank when relevant—data varies by meta
+3. Consider sample size before drawing conclusions (GP WR needs volume)
+
+## Code Conventions
+
+- Python with pandas for analysis
+- Scripts should run top-to-bottom without manual intervention
+- Prefer clear variable names; add brief comments for non-obvious logic
+
+## When to Reference README
+
+For full context (structure, tech stack, links), the user can add `@README.md` to a prompt.

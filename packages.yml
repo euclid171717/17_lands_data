@@ -1,0 +1,3 @@
+packages:
+  - package: jwills/dbt-duckdb
+    version: 1.8.0

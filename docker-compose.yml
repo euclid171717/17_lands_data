@@ -1,0 +1,17 @@
+# 17lands Data Project - Docker Compose
+# Usage: docker compose run --rm app <command>
+# Example: docker compose run --rm app python -m scripts.ingest.cli --helpers
+
+services:
+  app:
+    build: .
+    volumes:
+      # Persist data, config, and output on host
+      - ./data:/app/data
+      - ./config:/app/config
+      - ./output:/app/output
+    working_dir: /app
+    environment:
+      - DBT_PROFILES_DIR=/app
+    # Override CMD when you run a command:
+    # docker compose run --rm app python -m scripts.ingest.cli --helpers

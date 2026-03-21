@@ -1,0 +1,22 @@
+abilityId,dungeon,room,effect
+146073,Dungeon of the Mad Mage,Yawning Portal,You gain 1 life.
+146074,Dungeon of the Mad Mage,Dungeon Level,Scry 1.
+146075,Dungeon of the Mad Mage,Goblin Bazaar,Create a Treasure token.
+146076,Dungeon of the Mad Mage,Twisted Caverns,Target creature can't attack until your next turn.
+146077,Dungeon of the Mad Mage,Lost Level,Scry 2.
+146078,Dungeon of the Mad Mage,Runestone Caverns,Exile the top two cards of your library. You may play them.
+146079,Dungeon of the Mad Mage,Muiral's Graveyard,Create two 1/1 black Skeleton creature tokens.
+146080,Dungeon of the Mad Mage,Deep Mines,Scry 3.
+146081,Dungeon of the Mad Mage,Mad Wizard's Lair,Draw three cards and reveal them. You may cast one of them without paying its mana cost.
+146082,Lost Mine of Phandelver,Cave Entrance,Scry 1.
+146083,Lost Mine of Phandelver,Goblin Lair,Create a 1/1 red Goblin creature token.
+146084,Lost Mine of Phandelver,Mine Tunnels,Create a Treasure token.
+146085,Lost Mine of Phandelver,Storeroom,Put a +1/+1 counter on target creature.
+146086,Lost Mine of Phandelver,Dark Pool,Each opponent loses 1 life and you gain 1 life.
+146087,Lost Mine of Phandelver,Fungi Cavern,Target creature gets -4/-0 until your next turn.
+146088,Lost Mine of Phandelver,Temple of Dumathoin,Draw a card.
+146089,Tomb of Annihilation,Trapped Entry,Each player loses 1 life.
+146090,Tomb of Annihilation,Veils of Fear,Each player loses 2 life unless they discard a card.
+146091,Tomb of Annihilation,Sandfall Cell,"Each player loses 2 life unless they sacrifice a creature, artifact, or land."
+146092,Tomb of Annihilation,Oubliette,"Discard a card and sacrifice a creature, an artifact, and a land."
+146093,Tomb of Annihilation,Cradle of the Death God,"Create The Atropal, a legendary 4/4 black God Horror creature token with deathtouch."
