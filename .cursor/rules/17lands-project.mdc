@@ -1,36 +1,63 @@
 ---
-description: Core project context and conventions for 17lands data analysis
+description: 17lands pipeline — DuckDB, dbt, ingest, commands, Windows file locks
 alwaysApply: true
 ---
 
-# 17lands Data Project Rules
+# 17lands data project (read first)
 
-## Project Context
+## What this is
 
-This repo analyzes 17lands drafting data (Magic: The Gathering Arena Limited).
+- **Goal:** Analyze **17lands** public Limited data (Magic: The Gathering Arena draft/game/replay).  
+- **Sources:** [17lands public datasets](https://www.17lands.com/public_datasets) only (CSV/JSON gzip). **Do not** scrape their API or site. License: CC BY 4.0.  
+- **Stack:** **Python** ingest → **DuckDB** (`.duckdb` files under `data/db/`) → **dbt** (`dbt-duckdb`) for `staging` / `marts` schemas (`main_staging`, etc.).  
+- **Config:** `config/datasets.yaml` (copy from `config/datasets.yaml.example` if missing). Controls S3 URLs, `expansions[]`, `use_per_set_database`, optional `duckdb_path`, `ingest_data_types`.  
+- **dbt:** Profile `seventeen_lands` in repo-root `profiles.yml`; path from env **`DUCKDB_PATH`** (defaults `data/db/17lands.duckdb`). Always run **`dbt … --profiles-dir .`** from repo root. **`threads`** set in `profiles.yml` (e.g. 8).  
+- **Long docs:** `docs/RUNBOOK.md` (commands, vars, troubleshooting), `docs/IMPLEMENTATION_PLAN.md`.
 
-**Data source**: Use [public datasets](https://www.17lands.com/public_datasets) only—do not scrape their API or site. Data is CSV/JSON, gzip compressed. Types: game-level, draft-level, replay. License: CC BY 4.0.
+## Commands (canonical)
 
-See docs/IMPLEMENTATION_PLAN.md for ingestion (file/set/all), helper data, scheduling.
+Orchestrator: **`python -m scripts.pipeline`** (from repo root).
 
-Key conventions:
+| Intent | Command |
+|--------|---------|
+| Helpers + card lists, then set CSVs, then dbt for one set | `python -m scripts.pipeline full --set <CODE>` |
+| Same pipeline for every expansion in `datasets.yaml` | `python -m scripts.pipeline full --all` (heavy) |
+| Ingest only | `python -m scripts.pipeline ingest --helpers --set <CODE>` then `… ingest --set <CODE>` (or use `ingest` flags per `scripts.ingest.cli`) |
+| dbt only | `python -m scripts.pipeline dbt --set <CODE>` or `… dbt --all` |
+| Smoke check (no download) | `python -m scripts.pipeline verify --set <CODE>` |
+| dbt project parse | `python -m scripts.pipeline parse` |
+| Delete `.duckdb` file(s), then rebuild | `python -m scripts.pipeline reset --set <CODE>` then `full`, or **`full --set <CODE> --reset-db`** (close IDE DB first) |
+| Force re-download (ignore ETag skip) | Add **`--fresh`** to `ingest` or `full` |
 
-- **Raw data**: Store in `data/`, never modify originals
-- **Outputs**: Write to `output/` (reports, charts, processed CSVs)
-- **Scripts**: `scripts/` for reusable code, `notebooks/` for exploration
+Lower-level (same behavior): `python -m scripts.ingest.cli …` — see `docs/RUNBOOK.md` §2–3.
 
-## Data Rules
+**Ad-hoc SQL file against DuckDB:** `python -m scripts.run_query queries/…sql` (uses `DUCKDB_PATH` or config).
 
-1. Preserve 17lands column names exactly: `avg_seen_at`, `win_rate`, `ever_drawn_win_rate`, etc.
-2. Filter by format/rank when relevant—data varies by meta
-3. Consider sample size before drawing conclusions (GP WR needs volume)
+## DuckDB path rules
 
-## Code Conventions
+- **Per-set DB:** `use_per_set_database: true` → `data/db/<CODE>.duckdb`.  
+- **Single DB / override:** `use_per_set_database: false` + optional `duckdb_path: data/db/….duckdb` in `datasets.yaml`.
+- **One DB path:** With `use_per_set_database: true`, set **`CODE`** is `data/db/<CODE>.duckdb` (e.g. **`data/db/TMT.duckdb`**). Point IDE + `DUCKDB_PATH` at that same file. Close the IDE connection before ingest/dbt if Windows reports a file lock.
 
-- Python with pandas for analysis
-- Scripts should run top-to-bottom without manual intervention
-- Prefer clear variable names; add brief comments for non-obvious logic
+## Critical: Windows + embedded DuckDB + dbt/ingest
 
-## When to Reference README
+- **`dbt run`** and **ingest** open the `.duckdb` **for write**.  
+- **Cursor / SQLTools / DuckDB extension / Node** often keep the **same file** open → **`IO Error: file is being used by another process`**.  
+- **Fix:** Disconnect DB in the IDE, close connections, or **quit Cursor**, then run ingest/dbt **from an external terminal**; or use a **copy** of the DB for dbt (see `docs/RUNBOOK.md` §4.2).  
+- This is **not** “you queried too much” — it’s **one writer** vs **another process** holding the file.
 
-For full context (structure, tech stack, links), the user can add `@README.md` to a prompt.
+## dbt notes
+
+- **Vars:** `has_replay` (enable `stg_replay` when `raw.replay` exists); `build_pack_pool_mart` (huge UNPIVOT mart — off by default).  
+- **Materializations:** Staging/marts configured as **tables** (not views) for interactive querying; see `dbt_project.yml`.  
+- **Postgres migration:** Some SQL is DuckDB-specific (`SELECT * EXCLUDE`, `TRY_CAST`, `UNPIVOT` in mart) — porting would need rewrites.
+
+## Data / analysis conventions
+
+- Preserve 17lands column names where they come from raw (`avg_seen_at`, win rates, etc.).  
+- Filter by format/rank when relevant; respect sample size.  
+- Raw data under `data/`; don’t mutate originals.
+
+## Queries
+
+- SQL files in `queries/` for exploration; run via `scripts.run_query` or DuckDB/SQLTools (mind file locks during writes).

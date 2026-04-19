@@ -1,6 +1,7 @@
 {{
   config(
-    materialized='view'
+    materialized='table',
+    enabled=var('has_replay', false),
   )
 }}
 -- Staging: replay data (one row per turn)

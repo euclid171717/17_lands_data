@@ -1,8 +1,4 @@
-{{
-  config(
-    materialized='view'
-  )
-}}
+{{ config(materialized='table') }}
 -- Staging: MTGA card IDs to card names and metadata
 -- Columns: id, expansion, name, rarity, color_identity, mana_value, types, is_booster
 

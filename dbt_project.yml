@@ -1,11 +1,17 @@
 # 17lands dbt project - transforms raw data into staging, intermediate, and marts
 # Run from project root: dbt run
 
-name: "17lands"
+name: "seventeen_lands"
 version: "1.0.0"
 config-version: 2
 
-profile: "17lands"
+profile: "seventeen_lands"
+
+# Set has_replay: true when raw.replay exists (e.g. after ingesting replay).
+vars:
+  has_replay: false
+  # Unpivot mart is very large; enable only when needed: dbt run --vars '{"build_pack_pool_mart": true}'
+  build_pack_pool_mart: false
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -20,13 +26,11 @@ clean-targets:
   - "dbt_packages"
 
 models:
-  17lands:
+  seventeen_lands:
+    +materialized: table
     staging:
       +schema: staging
-      +materialized: view
-    intermediate:
-      +schema: intermediate
-      +materialized: view
+      +materialized: table
     marts:
       +schema: marts
-      +materialized: view
+      +materialized: table

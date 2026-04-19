@@ -1,8 +1,4 @@
-{{
-  config(
-    materialized='view'
-  )
-}}
+{{ config(materialized='table') }}
 -- Staging: draft data (one row per pick)
 -- Filter by expansion, event_type. Apply empty_to_null to key string columns.
 -- Add more column transforms as needed for your analysis.

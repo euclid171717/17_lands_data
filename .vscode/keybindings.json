@@ -1,0 +1,7 @@
+[
+  {
+    "key": "ctrl+alt+enter",
+    "command": "sqltools.executeCurrentQuery",
+    "when": "editorTextFocus && config.seventeenLands.sqltoolsRunKeybinding"
+  }
+]

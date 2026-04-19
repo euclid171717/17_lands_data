@@ -1,0 +1,23 @@
+# Text: LF in repo + working tree. On Windows, if Git still warns about LF/CRLF on add,
+# run once in this repo:  git config --local core.autocrlf false
+# (System Git often sets core.autocrlf=true; it fights eol=lf below.)
+* text=auto eol=lf
+
+# Binary — never line-ending convert
+*.duckdb binary
+*.db binary
+*.gz binary
+*.parquet binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.pdf binary
+*.zip binary
+*.vsix binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary

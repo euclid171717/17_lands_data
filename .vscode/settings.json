@@ -1,0 +1,37 @@
+{
+  "files.eol": "\n",
+  "seventeenLands.sqltoolsRunKeybinding": true,
+  "duckdb.databases": [
+    {
+      "alias": "seventeen_lands",
+      "type": "file",
+      "path": "C:/Users/Jeff/Documents/17_lands_data/data/db/TMT.duckdb",
+      "readOnly": true,
+      "attached": false
+    }
+  ],
+  "duckdb.defaultDatabase": "seventeen_lands",
+  "workbench.editorAssociations": {
+    "*.parquet": "duckdb.dataFileViewer",
+    "*.csv": "duckdb.dataFileViewer",
+    "*.tsv": "duckdb.dataFileViewer"
+  },
+  "sqltools.disableChordKeybindings": true,
+  "sqltools.useNodeRuntime": "C:\\Progra~1\\nodejs\\node.exe",
+  "sqltools.dependencyManager": {
+    "packageManager": "C:\\Progra~1\\nodejs\\npm.cmd",
+    "installArgs": ["install"],
+    "runScriptArgs": ["run"],
+    "autoAccept": true
+  },
+  "sqltools.connections": [
+    {
+      "name": "DuckDB",
+      "accessMode": "Read Only",
+      "previewLimit": 50,
+      "driver": "DuckDB",
+      "group": "17lands",
+      "databaseFilePath": "C:\\Users\\Jeff\\Documents\\17_lands_data\\data\\db\\TMT.duckdb"
+    }
+  ]
+}

@@ -136,7 +136,7 @@ card_lists:
 
 expansions:
   - code: MKM
-    formats: [premier_draft, quick_draft, traditional_draft]
+    formats: [premier_draft, trad_draft, trad_sealed, sealed]
     draft_url: "..."
     game_url: "..."
     replay_url: "..."

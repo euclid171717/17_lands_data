@@ -1,9 +1,14 @@
 # dbt profile for 17lands. Uses local DuckDB.
 # Run dbt from project root so the path resolves correctly.
+# Note: profile name cannot start with a digit (dbt validation).
 
-17lands:
+seventeen_lands:
   target: dev
   outputs:
     dev:
       type: duckdb
-      path: "data/db/17lands.duckdb"
+      # Parallel model execution (raise if you have many cores and large builds).
+      threads: 8
+      # Always set DUCKDB_PATH when using per-set DBs (data/db/<SET>.duckdb). The fallback below is
+      # only for single-file mode (use_per_set_database: false); it is not auto-derived from config.
+      path: "{{ env_var('DUCKDB_PATH', 'data/db/17lands.duckdb') }}"

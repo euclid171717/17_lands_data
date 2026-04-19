@@ -1,8 +1,4 @@
-{{
-  config(
-    materialized='view'
-  )
-}}
+{{ config(materialized='table') }}
 -- Staging: dungeon abilities for AFR replay data
 -- Applies empty_to_null to strings, sensible types for ids
 
