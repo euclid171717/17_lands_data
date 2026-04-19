@@ -10,6 +10,8 @@ services:
       - ./data:/app/data
       - ./config:/app/config
       - ./output:/app/output
+      # Ad-hoc SQL: edit in IDE, run via scripts.run_query
+      - ./queries:/app/queries
     working_dir: /app
     environment:
       - DBT_PROFILES_DIR=/app

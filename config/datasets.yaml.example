@@ -3,18 +3,49 @@
 
 s3_base: "https://17lands-public.s3.amazonaws.com"
 
+# When true: DuckDB path is data/db/<CODE>.duckdb (use --set with --helpers, and DUCKDB_PATH for dbt).
+# When false: single data/db/17lands.duckdb. Prefer per-set when loading multiple sets: each set's
+# CSVs introduce different per-card columns (pack_card_*, drawn_*, etc.); one combined raw.draft
+# becomes a sparse, extremely wide union — awkward for dbt and analysis. Single-DB mode is fine if
+# you only load one set at a time into that file.
+use_per_set_database: false
+# Optional: pin which set when a tool needs a DB path without --set. If omitted (per-set mode),
+# the first expansions[] entry is used — prepend new sets at the top so they become the default.
+# default_expansion: MKM
+
+# If true: skip re-download when S3 ETag/Last-Modified unchanged (data/.ingest_remote_state.json).
+# Applies to helpers, card_lists, and per-set draft/game/replay URLs. When a set file is skipped
+# and the DB already has rows for that slice, DuckDB reload is skipped too.
+skip_download_if_unchanged: true
+
+# If true: always full GET for helpers + card_lists (ignore ETag skip). Set-level files still use
+# skip_download_if_unchanged unless you set it false globally.
+always_refresh_helpers: false
+
+# URLs are inferred from url_patterns + expansion slug + format, e.g.:
+#   .../draft_data/draft_data_public.TMT.PremierDraft.csv.gz
+# Not every expansion has every file; ingest skips 403/404 without creating empty tables.
+# Special slugs (e.g. Powered Cube) use url_expansion on the expansion entry (see expansions below).
+
 # URL patterns: {expansion} and {format} are replaced. Format uses PascalCase (PremierDraft, etc.)
-# Add explicit urls in helpers if patterns don't match 17lands structure
 url_patterns:
   draft: "analysis_data/draft_data/draft_data_public.{expansion}.{format}.csv.gz"
   game: "analysis_data/game_data/game_data_public.{expansion}.{format}.csv.gz"
   replay: "analysis_data/replay_data/replay_data_public.{expansion}.{format}.csv.gz"
 
+# Optional: which dataset kinds to download (default: all keys in url_patterns).
+# Omit replay to save time and space — draft/game already have card win rates, deck stats, etc.
+# ingest_data_types:
+#   - draft
+#   - game
+
 # Format mapping (our key -> 17lands PascalCase)
+# 17lands public URLs use: PremierDraft, TradDraft, TradSealed, Sealed (no QuickDraft)
 format_map:
   premier_draft: PremierDraft
-  quick_draft: QuickDraft
-  traditional_draft: TraditionalDraft
+  trad_draft: TradDraft
+  trad_sealed: TradSealed
+  sealed: Sealed
 
 # Helper files - small metadata. Fill URLs from public_datasets page.
 helpers:
@@ -32,12 +63,21 @@ helpers:
 # Card lists - map MTGA IDs to card names for replay data. Fill from public_datasets Card Lists table.
 card_lists:
   urls:
-    - "https://17lands-public.s3.amazonaws.com/analysis_data/abilities/abilities.csv"
+    - "https://17lands-public.s3.amazonaws.com/analysis_data/cards/abilities.csv"
     - "https://17lands-public.s3.amazonaws.com/analysis_data/cards/cards.csv"
 
-# Expansions to ingest. Add codes from the public_datasets table.
+# Expansions to ingest. Prepend new sets at the TOP (first entry = default DB when default_expansion
+# is unset). Put cubes / special releases at the end. code: CLI + data/raw/datasets/<code>/.
+# url_expansion: optional S3 filename segment when it differs from code.
 expansions:
   - code: MKM
-    formats: [premier_draft, quick_draft, traditional_draft]
+    formats: [premier_draft, trad_draft, trad_sealed, sealed]
   - code: LCI
-    formats: [premier_draft, quick_draft, traditional_draft]
+    formats: [premier_draft, trad_draft, trad_sealed, sealed]
+  # Example: TMT uses the set code as the filename segment:
+  # - code: TMT
+  #   formats: [premier_draft, trad_draft, trad_sealed, sealed]
+  # Powered Cube (hyphen/underscore slug in the public URL):
+  # - code: CUBE_PW
+  #   url_expansion: Cube_-_Powered
+  #   formats: [premier_draft]

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Job: Ingest helper files and card lists."""
 
+import os
 import sys
 from pathlib import Path
 
@@ -16,12 +17,14 @@ def main() -> int:
     if not config_path.exists():
         print("ERROR: config/datasets.yaml not found. Copy from datasets.yaml.example")
         return 1
+    exp = os.environ.get("EXPANSION_CODE")
     try:
-        helpers.ingest_helpers(config_path)
-        card_lists.ingest_card_lists(config_path)
+        hs = helpers.ingest_helpers(config_path, expansion_code=exp)
+        cs = card_lists.ingest_card_lists(config_path, expansion_code=exp)
     except Exception as e:
         print(f"ERROR: {e}")
         return 1
+    print(f"Summary: {hs.summary_line('helpers')} | {cs.summary_line('card_lists')}")
     return 0
 
 

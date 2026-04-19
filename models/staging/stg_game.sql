@@ -1,8 +1,4 @@
-{{
-  config(
-    materialized='view'
-  )
-}}
+{{ config(materialized='table') }}
 -- Staging: game data (one row per game)
 -- Filter by expansion, event_type. Add column-specific transforms as needed.
 

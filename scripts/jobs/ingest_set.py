@@ -14,7 +14,7 @@ from scripts.ingest import datasets
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--set", "--expansion", dest="expansion", required=True)
-    parser.add_argument("--format", choices=["premier_draft", "quick_draft", "traditional_draft"])
+    parser.add_argument("--format", choices=["premier_draft", "trad_draft", "trad_sealed", "sealed"])
     args = parser.parse_args()
 
     config_path = root / "config" / "datasets.yaml"

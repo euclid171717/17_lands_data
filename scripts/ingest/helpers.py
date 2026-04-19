@@ -4,35 +4,38 @@ import logging
 from pathlib import Path
 
 import duckdb
-import requests
 
 from .config import get_paths, load_config, ensure_paths
 from .datasets import load_csv_into_duckdb
+from .ingest_stats import IngestStats
+from .remote_freshness import download_if_newer, simple_download
 
 logger = logging.getLogger(__name__)
 
 
-def download_file(url: str, dest: Path) -> None:
-    """Stream download URL to dest. Creates parent dirs."""
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    logger.info("Downloading %s -> %s", url, dest)
-    resp = requests.get(url, stream=True, timeout=60)
-    resp.raise_for_status()
-    with dest.open("wb") as f:
-        for chunk in resp.iter_content(chunk_size=65536):
-            f.write(chunk)
-
-
-def ingest_helpers(config_path: Path | None = None) -> None:
+def ingest_helpers(
+    config_path: Path | None = None,
+    expansion_code: str | None = None,
+    *,
+    force_download: bool = False,
+) -> IngestStats:
     """Download helper files to data/raw/helpers/ and load CSVs into raw_helpers schema."""
     config = load_config(config_path)
-    paths = get_paths(config)
+    paths = get_paths(config, expansion_code)
     ensure_paths(paths)
 
     helpers = config.get("helpers", [])
+    stats = IngestStats()
     if not helpers:
         logger.warning("No helpers defined in config")
-        return
+        return stats
+
+    # When true: always GET helpers (ignore ETag skip). Card lists use same flag via card_lists.
+    always_refresh = config.get("always_refresh_helpers", False)
+    skip_if_unchanged = (
+        config.get("skip_download_if_unchanged", False) and not always_refresh and not force_download
+    )
+    state_path = paths["ingest_remote_state"]
 
     conn = duckdb.connect(str(paths["db"]))
     try:
@@ -44,7 +47,12 @@ def ingest_helpers(config_path: Path | None = None) -> None:
             filename = Path(url).name
             dest = paths["raw_helpers"] / filename
             try:
-                download_file(url, dest)
+                if skip_if_unchanged:
+                    result = download_if_newer(url, dest, state_path, skip_if_unchanged=True)
+                    stats.add_download_result(result)
+                else:
+                    simple_download(url, dest)
+                    stats.downloaded += 1
             except Exception as e:
                 logger.error("Failed to download %s: %s", url, e)
                 raise
@@ -60,3 +68,4 @@ def ingest_helpers(config_path: Path | None = None) -> None:
                     load_csv_into_duckdb(dest, conn, table_name, "raw_helpers")
     finally:
         conn.close()
+    return stats
